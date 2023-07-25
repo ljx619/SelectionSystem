@@ -50,6 +50,7 @@ public class Main {
             JdbcTemplate jt = new JdbcTemplate(JDBCutils.getDataSource());
             String sql = "select * from student where username = ? and password = ?";
             List<Map<String, Object>> list = jt.queryForList(sql, sname, s2);
+
             if (list.size() != 0) {
                 System.out.println("登陆成功");
                 return true;
@@ -57,6 +58,7 @@ public class Main {
                 System.out.println("账号或密码错误！");
                 return false;
             }
+
     }
 
     public static boolean login2() {
@@ -66,12 +68,14 @@ public class Main {
             System.out.println("请输入您的密码");
             String s2 = sc.nextLine();
             JdbcTemplate jt = new JdbcTemplate(JDBCutils.getDataSource());
-            String sql = "select * from teacher where name = ? and password = ?";
+            String sql = "select * from teacher where username = ? and password = ?";
             List<Map<String, Object>> list = jt.queryForList(sql, sname, s2);
+
             if (list.size() != 0) {
                 System.out.println("登陆成功");
                 return true;
             } else {
+                System.out.println("账号或密码错误！");
                 return false;
             }
     }
@@ -94,36 +98,60 @@ public class Main {
     }
 
     private static void teachersign() {
-        Scanner sc = new Scanner(System.in);
-        System.out.println("请设置您的姓名");
-        String s1 = sc.nextLine();
-        System.out.println("请设置您的手机号");
-        String s2 = sc.nextLine();
-        System.out.println("请设置您的用户名");
-        String s3 = sc.nextLine();
-        System.out.println("请设置您的密码");
-        String s4 = sc.nextLine();
-        String sql = "insert into teacher values (null,?,?,?,?)";
-        jt.update(sql, s1, s2, s3, s4);
-        System.out.println("注册成功");
+        while (true) {
+            Scanner sc = new Scanner(System.in);
+            System.out.println("请设置您的姓名");
+            String s1 = sc.nextLine();
+            System.out.println("请设置您的手机号");
+            String s2 = sc.nextLine();
+            System.out.println("请设置您的用户名");
+            String s3 = sc.nextLine();
+
+            //账号查重
+            String sqluser = "select username from teacher where username = ?";
+            List<Map<String, Object>> lists = jt.queryForList(sqluser, s3);
+            if (lists.size() != 0) {
+                System.out.println("此账号已存在，请重新输入");
+                continue;
+            }
+
+            System.out.println("请设置您的密码");
+            String s4 = sc.nextLine();
+            String sql = "insert into teacher values (null,?,?,?,?)";
+            jt.update(sql, s1, s2, s3, s4);
+            System.out.println("注册成功");
+            return;
+        }
     }
 
     private static void studentsign() {
-        Scanner sc = new Scanner(System.in);
-        System.out.println("请设置您的姓名");
-        String s1 = sc.nextLine();
-        System.out.println("请设置您的性别");
-        String s2 = sc.nextLine();
-        System.out.println("请设置您的班级");
-        int s3 = sc.nextInt();
-        System.out.println("请设置您的用户名");
-        sc.nextLine();
-        String s4 = sc.nextLine();
-        System.out.println("请设置您的密码");
-        String s5 = sc.nextLine();
-        String sql = "insert into student values (null,?,?,?,?,?)";
-        jt.update(sql, s1, s2, s3, s4, s5);
-        System.out.println("注册成功");
+        while(true) {
+            Scanner sc = new Scanner(System.in);
+            System.out.println("请设置您的姓名");
+            String s1 = sc.nextLine();
+            System.out.println("请设置您的性别");
+            String s2 = sc.nextLine();
+            System.out.println("请设置您的班级");
+            int s3 = sc.nextInt();
+            System.out.println("请设置您的用户名");
+            sc.nextLine();
+            String s4 = sc.nextLine();
+
+            //账号查重
+            String sqluser = "select username from student where username = ?";
+            List<Map<String, Object>> lists = jt.queryForList(sqluser, s4);
+            if (lists.size() != 0) {
+                System.out.println("此账号已存在，请重新输入");
+                continue;
+            }
+
+            System.out.println("请设置您的密码");
+            String s5 = sc.nextLine();
+            String sql = "insert into student values (null,?,?,?,?,?)";
+            jt.update(sql, s1, s2, s3, s4, s5);
+            System.out.println("注册成功");
+            return;
+        }
     }
 
     public static void studentfunction() {
@@ -139,8 +167,8 @@ public class Main {
             int i = sc.nextInt();
             switch (i) {
                 case 1:
-                    String sql = "select * from student where name = ?";
-                    List<Map<String, Object>> list = jt.queryForList(sql, sname);
+                    String sql = "select * from student where username = ?";
+                    List<Map<String, Object>> list = jt.queryForList(sql,sname);
                     for (Map map : list) {
                         Collection values = map.values();
                         System.out.println(values);
@@ -177,6 +205,7 @@ public class Main {
                     break;
                 case 4:
                     stutseleclass();
+                    break;
                 case 0:
                     return;
             }
@@ -196,9 +225,8 @@ public class Main {
             int i = sc.nextInt();
             switch (i) {
                 case 1:
-                    String sql = "select * from student where name = ?";
-                    System.out.println(sname);
-                    List<Map<String, Object>> list = jt.queryForList(sql, sname);
+                    String sql = "select * from teacher where username = ?";
+                    List<Map<String, Object>> list = jt.queryForList(sql,sname);
                     for (Map map : list) {
                         Collection values = map.values();
                         System.out.println(values);
@@ -208,34 +236,30 @@ public class Main {
                     System.out.println("请输入新的姓名");
                     sc.nextLine();
                     String s1 = sc.nextLine();
-                    sql = "update student set name = ?";
-                    jt.update(sql, s1);
-                    System.out.println("请输入新的性别");
+                    sql = "update teacher set name = ? where username = ?";
+                    jt.update(sql, s1,sname);
+                    System.out.println("请输入新的手机号");
                     sc.nextLine();
-                    String s2 = sc.nextLine();
-                    sql = "update student set sex = ?";
-                    jt.update(sql, s2);
-                    System.out.println("请输入新的班级");
-                    sc.nextLine();
-                    int s3 = sc.nextInt();
-                    sql = "update student set class = ?";
-                    jt.update(sql, s3);
+                    int s2 = sc.nextInt();
+                    sql = "update teacher set phonenumber = ? where username = ?";
+                    jt.update(sql, s2,sname);
                     break;
                 case 3:
                     System.out.println("请输入新的账号");
                     sc.nextLine();
                     String s4 = sc.nextLine();
-                    String sql4 = "update student set username = ? where username = ?";
+                    String sql4 = "update teacher set username = ? where username = ?";
                     jt.update(sql4,s4,sname);
                     sname = s4;
                     System.out.println("请输入新的密码");
                     String s5 = sc.nextLine();
-                    String sql5 = "update student set password = ? where username = ?";
+                    String sql5 = "update teacher set password = ? where username = ?";
                     jt.update(sql5,s5,sname );
                     System.out.println("修改成功");
                     break;
                 case 4:
                     teacseleclass();
+                    break;
                 case 0:
                     return;
             }
@@ -296,21 +320,27 @@ public class Main {
             int i = sc.nextInt();
             switch (i) {
                 case 1:
-                    String sql = "select classname from class join teacher on teacherid = teaacher.id";
-                    Map<String, Object> stringObjectMap = jt.queryForMap(sql);
-                    Collection<Object> values = stringObjectMap.values();
-                    System.out.println(values);
+                    String sql = "select classname from class join teacher on class.teacherid = teacher.id";
+                    List<Map<String, Object>> list1 = jt.queryForList(sql);
+                    System.out.println("下列为我的课程");
+                    for(Map map:list1){
+                        Collection values = map.values();
+                        System.out.println(values);
+                    }
                     break;
                 case 2:
-                    sql = "select class.classname from conn join student on student.id = " +
-                            "studentid join class on classid = class.id where class.teacherid = (select id from teacher where username ="+sname+" )";
-                    Map<String, Object> stringObjectMap1 = jt.queryForMap(sql);
-                    Collection<Object> values1 = stringObjectMap1.values();
-                    System.out.println(values1);
+                    sql = "select student.name ,student.class from conn join student on student.id = " +
+                            "conn.studentid join class on conn.classid = class.id join teacher on class.teacherid = teacher.id where teacher.username = ?";
+                    List<Map<String, Object>> list2 = jt.queryForList(sql, sname);
+                    System.out.println("当前选课学生有"+list2.size()+"个");
+                    for(Map map:list2){
+                        Collection values = map.values();
+                        System.out.println(values);
+                    }
                     break;
                 case 3:
                     System.out.println("当前课程名称");
-                    sql = "select class.classname from class where class.teacherid = teacher.id";
+                    sql = "select class.classname from class join teacher on class.teacherid = teacher.id";
                     List<Map<String, Object>> maps = jt.queryForList(sql);
                     for(Map map:maps){
                         System.out.println(map.values());
@@ -319,10 +349,9 @@ public class Main {
                     sc.nextLine();
                     String s = sc.nextLine();
                     System.out.println("请输入新的课程名称");
-                    sc.nextLine();
                     String s2 = sc.nextLine();
-                    String sql2 = "update class set class = ? where classname = "+s;
-                    jt.update(sql2,s2);
+                    String sql2 = "update class set classname = ? where classname = ?";
+                    jt.update(sql2,s2,s);
                     System.out.println("修改成功");
                     break;
                 case 0:
