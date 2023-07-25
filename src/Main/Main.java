@@ -297,9 +297,19 @@ public class Main {
                     System.out.println(values1);
                     break;
                 case 3:
-                    System.out.println("请输入要修改的");
-                    sql = "update class set class = ? where teacherid = (select id from teacher where username = ?)";
-
+                    System.out.println("当前课程名称");
+                    sql = "select class.classname from class where class.teacherid = teacher.id";
+                    List<Map<String, Object>> maps = jt.queryForList(sql);
+                    for(Map map:maps){
+                        System.out.println(map.values());
+                    }
+                    System.out.println("请输入要修改的课程名称");
+                    String s = sc.nextLine();
+                    System.out.println("请输入新的课程名称");
+                    String s2 = sc.nextLine();
+                    String sql2 = "update class set class = ? where classname = "+s;
+                    jt.update(sql2,s2);
+                    System.out.println("修改成功");
                     break;
                 case 0:
                     return;
