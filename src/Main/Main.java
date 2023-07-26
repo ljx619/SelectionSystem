@@ -391,14 +391,22 @@ public class Main {
                     break;
                 case 3:
                     System.out.println("当前课程名称");
-                    sql = "select class.classname from class join teacher on class.teacherid = teacher.id";
-                    List<Map<String, Object>> maps = jt.queryForList(sql);
+                    sql = "select class.classname from class join teacher on class.teacherid = teacher.id where username = ?";
+                    List<Map<String, Object>> maps = jt.queryForList(sql,sname);
                     for(Map map:maps){
                         System.out.println(map.values());
                     }
                     System.out.println("请输入要修改的课程名称");
                     sc.nextLine();
                     String s = sc.nextLine();
+
+                    String sqlts = "select * from class join teacher on class.teacherid = teacher.id where teacher.username = ? and class.classname = ?";
+                    List<Map<String, Object>> list3 = jt.queryForList(sqlts, sname, s);
+                    if(list3.size() == 0){
+                        System.out.println("您输入的课程名称有误，请重新输入");
+                        break;
+                    }
+
                     System.out.println("请输入新的课程名称");
                     String s2 = sc.nextLine();
                     String sql2 = "update class set classname = ? where classname = ?";
