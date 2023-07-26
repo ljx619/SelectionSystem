@@ -37,6 +37,8 @@ public class Main {
                     break;
                 case 0:
                     System.exit(0);
+                default:
+                    System.out.println("请重新输入正确的选项");
             }
         }
     }
@@ -94,63 +96,73 @@ public class Main {
             case 2:
                 teachersign();
                 break;
+            default:
+                System.out.println("请重新输入正确的选项");
         }
     }
 
     private static void teachersign() {
         while (true) {
-            Scanner sc = new Scanner(System.in);
-            System.out.println("请设置您的姓名");
-            String s1 = sc.nextLine();
-            System.out.println("请设置您的手机号");
-            String s2 = sc.nextLine();
-            System.out.println("请设置您的用户名");
-            String s3 = sc.nextLine();
+            try {
+                Scanner sc = new Scanner(System.in);
+                System.out.println("请设置您的姓名");
+                String s1 = sc.nextLine();
+                System.out.println("请设置您的手机号");
+                String s2 = sc.nextLine();
+                System.out.println("请设置您的用户名");
+                String s3 = sc.nextLine();
 
-            //账号查重
-            String sqluser = "select username from teacher where username = ?";
-            List<Map<String, Object>> lists = jt.queryForList(sqluser, s3);
-            if (lists.size() != 0) {
-                System.out.println("此账号已存在，请重新输入");
-                continue;
+                //账号查重
+                String sqluser = "select username from teacher where username = ?";
+                List<Map<String, Object>> lists = jt.queryForList(sqluser, s3);
+                if (lists.size() != 0) {
+                    System.out.println("此账号已存在，请重新输入");
+                    continue;
+                }
+
+                System.out.println("请设置您的密码");
+                String s4 = sc.nextLine();
+                String sql = "insert into teacher values (null,?,?,?,?)";
+                jt.update(sql, s1, s2, s3, s4);
+                System.out.println("注册成功");
+                return;
+            }catch (Exception e){
+                System.out.println("输入有误，请重新输入");
             }
-
-            System.out.println("请设置您的密码");
-            String s4 = sc.nextLine();
-            String sql = "insert into teacher values (null,?,?,?,?)";
-            jt.update(sql, s1, s2, s3, s4);
-            System.out.println("注册成功");
-            return;
         }
     }
 
     private static void studentsign() {
         while(true) {
-            Scanner sc = new Scanner(System.in);
-            System.out.println("请设置您的姓名");
-            String s1 = sc.nextLine();
-            System.out.println("请设置您的性别");
-            String s2 = sc.nextLine();
-            System.out.println("请设置您的班级");
-            int s3 = sc.nextInt();
-            System.out.println("请设置您的用户名");
-            sc.nextLine();
-            String s4 = sc.nextLine();
+            try {
+                Scanner sc = new Scanner(System.in);
+                System.out.println("请设置您的姓名");
+                String s1 = sc.nextLine();
+                System.out.println("请设置您的性别");
+                String s2 = sc.nextLine();
+                System.out.println("请设置您的班级");
+                int s3 = sc.nextInt();
+                System.out.println("请设置您的用户名");
+                sc.nextLine();
+                String s4 = sc.nextLine();
 
-            //账号查重
-            String sqluser = "select username from student where username = ?";
-            List<Map<String, Object>> lists = jt.queryForList(sqluser, s4);
-            if (lists.size() != 0) {
-                System.out.println("此账号已存在，请重新输入");
-                continue;
+                //账号查重
+                String sqluser = "select username from student where username = ?";
+                List<Map<String, Object>> lists = jt.queryForList(sqluser, s4);
+                if (lists.size() != 0) {
+                    System.out.println("此账号已存在，请重新输入");
+                    continue;
+                }
+
+                System.out.println("请设置您的密码");
+                String s5 = sc.nextLine();
+                String sql = "insert into student values (null,?,?,?,?,?)";
+                jt.update(sql, s1, s2, s3, s4, s5);
+                System.out.println("注册成功");
+                return;
+            }catch (Exception e){
+                System.out.println("输入有误，请重新输入");
             }
-
-            System.out.println("请设置您的密码");
-            String s5 = sc.nextLine();
-            String sql = "insert into student values (null,?,?,?,?,?)";
-            jt.update(sql, s1, s2, s3, s4, s5);
-            System.out.println("注册成功");
-            return;
         }
     }
 
@@ -175,21 +187,29 @@ public class Main {
                     }
                     break;
                 case 2:
-                    System.out.println("请输入新的姓名");
-                    sc.nextLine();
-                    String s1 = sc.nextLine();
-                    String sql1 = "update student set name = ? where username = ?";
-                    jt.update(sql1, s1,sname);
-                    System.out.println("请输入新的性别");
-                    String s2 = sc.nextLine();
-                    String sql2 = "update student set sex = ? where username = ?";
-                    jt.update(sql2, s2,sname);
-                    System.out.println("请输入新的班级");
-                    int s3 = sc.nextInt();
-                    String sql3 = "update student set class = ? where username = ?";
-                    jt.update(sql3, s3,sname);
-                    System.out.println("修改成功");
-                    break;
+                    try {
+                        System.out.println("请输入新的姓名");
+                        sc.nextLine();
+                        String s1 = sc.nextLine();
+                        System.out.println("请输入新的性别");
+                        String s2 = sc.nextLine();
+                        System.out.println("请输入新的班级");
+                        int s3 = sc.nextInt();
+
+                        String sql1 = "update student set name = ? where username = ?";
+                        jt.update(sql1, s1,sname);
+
+                        String sql2 = "update student set sex = ? where username = ?";
+                        jt.update(sql2, s2,sname);
+
+                        String sql3 = "update student set class = ? where username = ?";
+                        jt.update(sql3, s3,sname);
+                        System.out.println("修改成功");
+                        break;
+                    }catch (Exception e){
+                        System.out.println("输入有误，请重新输入");
+                    }
+
                 case 3:
                     System.out.println("请输入新的账号");
                     sc.nextLine();
@@ -233,17 +253,24 @@ public class Main {
                     }
                     break;
                 case 2:
-                    System.out.println("请输入新的姓名");
-                    sc.nextLine();
-                    String s1 = sc.nextLine();
-                    sql = "update teacher set name = ? where username = ?";
-                    jt.update(sql, s1,sname);
-                    System.out.println("请输入新的手机号");
-                    sc.nextLine();
-                    int s2 = sc.nextInt();
-                    sql = "update teacher set phonenumber = ? where username = ?";
-                    jt.update(sql, s2,sname);
-                    break;
+                    try {
+                        System.out.println("请输入新的姓名");
+                        sc.nextLine();
+                        String s1 = sc.nextLine();
+                        System.out.println("请输入新的手机号");
+                        sc.nextLine();
+                        int s2 = sc.nextInt();
+
+                        sql = "update teacher set name = ? where username = ?";
+                        jt.update(sql, s1,sname);
+
+                        sql = "update teacher set phonenumber = ? where username = ?";
+                        jt.update(sql, s2,sname);
+                        break;
+                    }catch (Exception e){
+                        System.out.println("输入有误，请重新输入");
+                    }
+
                 case 3:
                     System.out.println("请输入新的账号");
                     sc.nextLine();
