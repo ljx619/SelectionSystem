@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 //@SuppressWarnings("all")
+
 public class Main {
     static public JdbcTemplate jt = new JdbcTemplate(JDBCutils.getDataSource());
     public static String sname = null;
@@ -259,7 +260,7 @@ public class Main {
                         sc.nextLine();
                         String s1 = sc.nextLine();
                         System.out.println("请输入新的手机号");
-                        sc.nextLine();
+//                        sc.nextLine();
                         int s2 = sc.nextInt();
 
                         sql = "update teacher set name = ? where username = ?";
@@ -318,20 +319,39 @@ public class Main {
                     }
                     break;
                 case 2:
-                    System.out.println("请输入选课名称,1语文，2数学，3外语");
-                    sc.nextLine();
-                    int i2 = sc.nextInt();
-                    sql = "insert into conn values(null,(select id from student where username = '" + sname + "'),?)";
-                    jt.update(sql,i2);
-                    System.out.println("选课成功");
-                    break;
+                    try {
+                        System.out.println("请输入选课名称,1语文，2数学，3外语");
+                        sc.nextLine();
+                        int i2 = sc.nextInt();
+
+                        String sqlt = "SELECT * FROM conn join class on conn.classid = class.id join student on conn.studentid = student.id where student.username = ? AND classid = ?";
+                        List<Map<String, Object>> list2 = jt.queryForList(sqlt, sname, i2);
+                        if(list2.size()!=0){
+                            System.out.println("您已选择此课，请重新选择");
+                            break;
+                        }
+                        sql = "insert into conn values(null,(select id from student where username = '" + sname + "'),?)";
+                        jt.update(sql,i2);
+                        System.out.println("选课成功");
+                        break;
+                    }catch (Exception e){
+                        System.out.println("请输入正确选项");
+                        break;
+                    }
                 case 3:
                     System.out.println("请输入退课名称,1语文，2数学，3外语");
                     int i3 = sc.nextInt();
+
+                    String sqlt = "SELECT * FROM conn join class on conn.classid = class.id join student on conn.studentid = student.id where student.username = ? AND classid = ?";
+                    List<Map<String, Object>> list2 = jt.queryForList(sqlt, sname, i3);
+                    if(list2.size() == 0){
+                        System.out.println("您没有选择此课，请重新选择");
+                        break;
+                    }
+
                     sql = "delete from conn where studentid = (select id from student where username = " + sname + ") and classid = ?";
                     jt.update(sql,i3);
                     System.out.println("退课成功");
-                    ;
                     break;
                 case 0:
                     return;
@@ -351,8 +371,8 @@ public class Main {
             int i = sc.nextInt();
             switch (i) {
                 case 1:
-                    String sql = "select classname from class join teacher on class.teacherid = teacher.id";
-                    List<Map<String, Object>> list1 = jt.queryForList(sql);
+                    String sql = "select classname from class join teacher on class.teacherid = teacher.id where teacher.username = ?";
+                    List<Map<String, Object>> list1 = jt.queryForList(sql,sname);
                     System.out.println("下列为我的课程");
                     for(Map map:list1){
                         Collection values = map.values();
