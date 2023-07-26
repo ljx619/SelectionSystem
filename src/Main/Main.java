@@ -207,7 +207,8 @@ public class Main {
                         System.out.println("修改成功");
                         break;
                     }catch (Exception e){
-                        System.out.println("输入有误，请重新输入");
+                        System.out.println("输入有误，请重新选择");
+                        break;
                     }
 
                 case 3:
@@ -266,9 +267,12 @@ public class Main {
 
                         sql = "update teacher set phonenumber = ? where username = ?";
                         jt.update(sql, s2,sname);
+
+                        System.out.println("修改成功");
                         break;
                     }catch (Exception e){
                         System.out.println("输入有误，请重新输入");
+                        break;
                     }
 
                 case 3:
